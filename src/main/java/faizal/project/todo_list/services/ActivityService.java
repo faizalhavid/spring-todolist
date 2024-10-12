@@ -34,31 +34,27 @@ public class ActivityService {
         return convertToActivityResponse(activity);
     }
 
-    public Activity createActivity(ActivityRequest activityRequest) {
+    public ActivityResponse createActivity(ActivityRequest activityRequest) {
         Activity activity = new Activity();
         activity.setName(activityRequest.getName());
-
-        User user = userRepository.findById(activityRequest.getUser().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        activity.setUser(user);
         activity.setDescription(activityRequest.getDescription());
         activity.setStatus(activityRequest.getStatus());
-
-        if (activityRequest.getStart_date().isAfter(activityRequest.getEnd_date())) {
-            throw new IllegalArgumentException("Start date must be before end date");
-        }
-
         activity.setStart_date(activityRequest.getStart_date());
         activity.setEnd_date(activityRequest.getEnd_date());
 
-        return activityRepository.save(activity);
+        User user = userRepository.findById(activityRequest.getUser_id())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        activity.setUser(user);
+        activityRepository.save(activity);
+        return convertToActivityResponse(activity);
     }
 
-    public Activity updateActivity(ActivityRequest activityRequest, Long id) {
+    public ActivityResponse updateActivity(ActivityRequest activityRequest, Long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id " + id));
 
-        User user = userRepository.findById(activityRequest.getUser().getId())
+        User user = userRepository.findById(activityRequest.getUser_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         activity.setUser(user);
@@ -72,8 +68,8 @@ public class ActivityService {
 
         activity.setStart_date(activityRequest.getStart_date());
         activity.setEnd_date(activityRequest.getEnd_date());
-
-        return activityRepository.save(activity);
+        activityRepository.save(activity);
+        return convertToActivityResponse(activity);
     }
 
     public void deleteActivity(Long id) {

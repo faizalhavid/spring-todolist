@@ -1,7 +1,6 @@
 package faizal.project.todo_list.dto;
 
-import faizal.project.todo_list.model.User;
-import jakarta.validation.Valid;
+
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,9 +11,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class ActivityRequest {
+
     @NotNull(message = "user_id is required")
-    @Valid
-    private User user;
+    private Long user_id;
 
     @NotBlank(message = "activity name is required")
     @Size(min = 4, max = 20, message = "Activity name must be between 4 and 20 characters")

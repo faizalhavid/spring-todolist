@@ -31,7 +31,10 @@ public class ActivityController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Activity>> createActivity(@Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<ActivityResponse>> createActivity(@Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult) {
+//        if(activityRequest.getUser_id() == null) {
+//            return ResponseEntity.badRequest().body(new ApiResponse<>("error", "User is required", null));
+//        }
         if (bindingResult.hasErrors()) {
             String errorMessages = bindingResult.getAllErrors().stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -39,7 +42,7 @@ public class ActivityController {
             return ResponseEntity.badRequest().body(new ApiResponse<>("error", errorMessages, null));
         }
 
-        Activity createdActivity = activityService.createActivity(activityRequest);
+        ActivityResponse createdActivity = activityService.createActivity(activityRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("success", "Activity created successfully", createdActivity));
     }
 
@@ -50,7 +53,7 @@ public class ActivityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Activity>> updateActivity(@PathVariable Long id, @Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<ActivityResponse>> updateActivity(@PathVariable Long id, @Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errorMessages = bindingResult.getAllErrors().stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -58,13 +61,13 @@ public class ActivityController {
             return ResponseEntity.badRequest().body(new ApiResponse<>("error", errorMessages, null));
         }
 
-        Activity updatedActivity = activityService.updateActivity(activityRequest, id);
+        ActivityResponse updatedActivity = activityService.updateActivity(activityRequest, id);
         return ResponseEntity.ok(new ApiResponse<>("success", "Activity updated successfully", updatedActivity));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteActivity(@PathVariable Long id) {
         activityService.deleteActivity(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(new ApiResponse<>("success", "Activity deleted successfully", null));
     }
 }

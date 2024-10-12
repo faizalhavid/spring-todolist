@@ -67,7 +67,7 @@ public class UserService {
         userResponse.setId(user.getId());
         userResponse.setUsername(user.getUsername());
         userResponse.setEmail(user.getEmail());
-        userResponse.setActivityIds(
+        userResponse.setActivities(
                 user.getActivities().stream()
                         .map(Activity::getId)
                         .collect(Collectors.toList())

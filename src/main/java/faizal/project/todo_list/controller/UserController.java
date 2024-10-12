@@ -8,11 +8,13 @@ import faizal.project.todo_list.repository.UserRepository;
 import faizal.project.todo_list.services.UserService;
 import faizal.project.todo_list.utils.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -33,7 +35,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>("error", bindingResult.getAllErrors().get(0).getDefaultMessage(), null));
+            String errorMessages = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body(new ApiResponse<>("error", errorMessages, null));
         }
         User createdUser = userService.createUser(userRequest);
         return ResponseEntity.ok(new ApiResponse<>("success", "User created successfully", createdUser));

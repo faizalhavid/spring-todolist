@@ -1,10 +1,10 @@
 package faizal.project.todo_list.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import faizal.project.todo_list.model.Activity;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class UserRequest {
@@ -16,8 +16,10 @@ public class UserRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d).+$", message = "password must contain at least one letter and one number")
     private String password;
 
-    @NotNull(message = "email is required")
     @Email(message = "email is not valid")
+    @NotBlank(message = "Email is required")
     private String email;
+
+    private List<ActivityRequest> activities;
 
 }

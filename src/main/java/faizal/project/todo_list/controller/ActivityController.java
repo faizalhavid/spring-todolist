@@ -2,9 +2,10 @@ package faizal.project.todo_list.controller;
 
 import faizal.project.todo_list.dto.ActivityRequest;
 import faizal.project.todo_list.dto.ActivityResponse;
-import faizal.project.todo_list.model.Activity;
+import faizal.project.todo_list.helpers.JWTHelper;
 import faizal.project.todo_list.services.ActivityService;
 import faizal.project.todo_list.utils.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class ActivityController {
     private final ActivityService activityService;
 
+
     public ActivityController(ActivityService activityService) {
         this.activityService = activityService;
     }
@@ -31,10 +33,11 @@ public class ActivityController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ActivityResponse>> createActivity(@Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult) {
-//        if(activityRequest.getUser_id() == null) {
-//            return ResponseEntity.badRequest().body(new ApiResponse<>("error", "User is required", null));
-//        }
+    public ResponseEntity<ApiResponse<ActivityResponse>> createActivity(@Valid @RequestBody ActivityRequest activityRequest, BindingResult bindingResult, HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        Long userId = JWTHelper.extractUserId(token);
+        activityRequest.setUserId(userId);
+        ActivityResponse createdActivity = activityService.createActivity(activityRequest);
         if (bindingResult.hasErrors()) {
             String errorMessages = bindingResult.getAllErrors().stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -42,7 +45,6 @@ public class ActivityController {
             return ResponseEntity.badRequest().body(new ApiResponse<>("error", errorMessages, null));
         }
 
-        ActivityResponse createdActivity = activityService.createActivity(activityRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("success", "Activity created successfully", createdActivity));
     }
 

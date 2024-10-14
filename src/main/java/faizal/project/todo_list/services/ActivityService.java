@@ -10,6 +10,7 @@ import faizal.project.todo_list.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,10 +43,13 @@ public class ActivityService {
         activity.setStart_date(activityRequest.getStart_date());
         activity.setEnd_date(activityRequest.getEnd_date());
 
-        User user = userRepository.findById(activityRequest.getUser_id())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        // Debugging: Print the extracted userId
+        Long userId = activityRequest.getUserId();
+        System.out.println("Extracted User ID: " + userId);
 
-        activity.setUser(user);
+        // Check if user exists in the database
+        Optional<User> user = userRepository.findById(userId);
+        activity.setUser(user.orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId)));
         activityRepository.save(activity);
         return convertToActivityResponse(activity);
     }
@@ -54,8 +58,8 @@ public class ActivityService {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id " + id));
 
-        User user = userRepository.findById(activityRequest.getUser_id())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findById(activityRequest.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + activityRequest.getUserId()));
 
         activity.setUser(user);
         activity.setName(activityRequest.getName());

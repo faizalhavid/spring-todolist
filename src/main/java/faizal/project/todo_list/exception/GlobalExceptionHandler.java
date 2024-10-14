@@ -1,3 +1,4 @@
+// src/main/java/faizal/project/todo_list/exception/GlobalExceptionHandler.java
 package faizal.project.todo_list.exception;
 
 import faizal.project.todo_list.utils.ApiResponse;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.context.request.WebRequest;
+
+import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -49,10 +53,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleAllExceptions(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>("error", "An unexpected error occurred: " + ex.getMessage(), null));
+    public ResponseEntity<ApiResponse<Object>> handleAllExceptions(Exception ex, WebRequest request) {
+        ApiResponse<Object> apiResponse = new ApiResponse<>("error", ex.getMessage(), null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        ApiResponse<Object> apiResponse = new ApiResponse<>("error", ex.getMessage(), null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
+    }
 }

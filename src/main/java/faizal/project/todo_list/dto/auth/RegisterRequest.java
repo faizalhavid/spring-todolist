@@ -1,25 +1,22 @@
-package faizal.project.todo_list.dto;
+package faizal.project.todo_list.dto.auth;
 
-import faizal.project.todo_list.model.Activity;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class UserRequest {
+public class RegisterRequest {
     @NotNull(message = "username is required")
-    @Size(min = 6, max = 20, message = "username must be between 6 and 20 characters")
     private String username;
 
     @NotNull(message = "password is required")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "password must contain at least one lowercase letter, one uppercase letter, one number, and one special character")
     private String password;
 
+    @NotNull(message = "email is required")
     @Email(message = "email is not valid")
-    @NotBlank(message = "Email is required")
     private String email;
-
-    private List<ActivityRequest> activities;
 
 }

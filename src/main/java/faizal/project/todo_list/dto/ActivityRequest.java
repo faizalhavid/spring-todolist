@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class ActivityRequest {
 
-    @NotNull(message = "user_id is required")
-    private Long user_id;
+    private Long userId;
 
     @NotBlank(message = "activity name is required")
     @Size(min = 4, max = 20, message = "Activity name must be between 4 and 20 characters")

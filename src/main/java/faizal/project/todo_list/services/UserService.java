@@ -6,6 +6,7 @@ import faizal.project.todo_list.dto.UserResponse;
 import faizal.project.todo_list.exception.ResourceNotFoundException;
 import faizal.project.todo_list.model.Activity;
 import faizal.project.todo_list.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import faizal.project.todo_list.repository.UserRepository;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,9 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 
@@ -37,7 +40,7 @@ public class UserService {
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         //need to hash the password before saving
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
         return userRepository.save(user);
     }
 
@@ -50,7 +53,7 @@ public class UserService {
         user.setEmail(userRequest.getEmail());
 
         // Hash the password before saving
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
 
         return userRepository.save(user);
     }
